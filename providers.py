@@ -45,6 +45,9 @@ class Provider:
         if self.name == 'anthropic':
             return self._anthropic(messages, schemas)
         payload = {'model': self.model, 'messages': messages}
+        # Luna's Chat Completions function calling requires reasoning disabled.
+        if self.model == 'gpt-6-luna' or self.model.startswith('gpt-6-luna-'):
+            payload['reasoning_effort'] = 'none'
         if schemas:
             payload['tools'] = schemas
         data = post_json(self.url, {'Authorization': f'Bearer {self.key}'}, payload)
